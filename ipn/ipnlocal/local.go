@@ -7619,13 +7619,12 @@ func (b *LocalBackend) vipServicesFromPrefsLocked(prefs ipn.PrefsView) []*tailcf
 
 	allPortsServices := b.serveConfig.Services()
 
-	allPortsServices.Range(func(n string, s ipn.ServiceConfigView) bool {
-		mak.Set(&services, n, &tailcfg.VIPService{
-			Name:  n,
-			Ports: s.ServicePortRange(),
+	for svc, config := range allPortsServices.All() {
+		mak.Set(&services, svc, &tailcfg.VIPService{
+			Name:  svc,
+			Ports: config.ServicePortRange(),
 		})
-		return true
-	})
+	}
 
 	for _, s := range prefs.AdvertiseServices().AsSlice() {
 		if services == nil || services[s] == nil {

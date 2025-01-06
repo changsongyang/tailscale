@@ -671,12 +671,11 @@ func (v ServiceConfigView) ServicePortRange() []tailcfg.ProtoPortRange {
 
 	// Deduplicate the ports.
 	servePorts := make(map[uint16]struct{})
-	v.TCP().Range(func(port uint16, _ TCPPortHandlerView) bool {
+	for port := range v.TCP().All() {
 		if port > 0 {
 			servePorts[uint16(port)] = struct{}{}
 		}
-		return true
-	})
+	}
 	dedupedServePorts := make([]uint16, 0, len(servePorts))
 	for port := range servePorts {
 		dedupedServePorts = append(dedupedServePorts, port)
